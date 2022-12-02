@@ -58,13 +58,12 @@ private:
 
         void clear() {
             if (left) {
-                delete left;
-                left = nullptr;
+                left->clear();
             }
             if (right) {
-                delete right;
-                right = nullptr;
+                right->clear();
             }
+            delete this;
         }
 
     };//end of AVLNode
