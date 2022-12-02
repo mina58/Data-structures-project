@@ -14,77 +14,86 @@ using namespace std;
 typedef int ElementType;
 
 
-enum Color {RED, BLACK, DOUBLE_BLACK};
-
-struct Node
-{
-    int data;
-    int color;
-    Node *left, *right, *parent;
-
-    explicit Node(int);
+enum Color {
+    RED, BLACK, DOUBLE_BLACK
 };
+
 
 class RBT {
 
 private:
-    //RBT node class
-    class RBTNode {
-    public:
+//    RBT node struct
+    struct Node {
         ElementType data;
-        bool color; //true means red, false means black
-        RBTNode *parent;
-        RBTNode *left;
-        RBTNode *right;
+        int color;
+        Node *left, *right, *parent;
 
-        //default constructor
-        RBTNode(): data(0), color(true), parent(nullptr), left(nullptr), right(nullptr){};
+        explicit Node(ElementType data) :
+                data(data), color(RED), left(nullptr), right(nullptr), parent(nullptr) {} //initialize an empty red node
+    };
 
-        //parameterized constructor: takes the value of the node as a parameter
-        RBTNode(ElementType data): data(data), color(true), parent(nullptr), left(nullptr), right(nullptr){};
 
-        //parameterized constructor: takes the value of the node and the color as parameters
-        RBTNode(ElementType data, bool isRed): data(data), color(isRed), parent(nullptr), left(nullptr), right(nullptr){};
-
-        void clear() {
-            if (left) {
-                left->clear();
-            }
-            if (right) {
-                right->clear();
-            }
-            delete this;
-        }
-
-    };// end of RBTNode
-
-    RBTNode *root{};
+    Node *root;
 
     /***private member functions***/
 
-    //this function performs right rotation on a node
-    void rotateRight(RBTNode *node, bool changeColor);
+    //this function rotates a node to the left
+    void rotateLeft(Node *&node);
 
-    //this function performs left rotation on a node
-    void rotateLeft(RBTNode *node, bool changeColor);
+    //this function rotates a node to the right
+    void rotateRight(Node *&node);
 
-    //this function returns the sibling of a node
-    RBTNode *sibling(RBTNode *node);
+    //this function fixes the tree after insertion
+    void fixInsert(Node *&node);
 
-    //this is an auxiliary function that inserts a node in the tree
-    RBTNode *insertAux(RBTNode *parent, RBTNode *&node, ElementType val);
+    //this function fixes the tree after deletion
+    void fixDelete(Node *&node);
 
-    //this is an auxiliary function that fills a vector with the inorder
-    void inorderAux(vector<ElementType> &v, RBTNode *node);
+    //this function prints the inorder traversal of the tree
+    void inorderAux(Node *&node);
+
+    //this function prints the preorder traversal of the tree
+    void preorderAux(Node *&node);
+
+    //this function gets the color of a node
+    static int getColor(Node *&node);
+
+    //this function sets the color of a node
+    static void setColor(Node *&node, int color);
+
+    //this function return the node with the min value in a subtree
+    Node *minValueNode(Node *&node);
+
+    //this function inserts a node in the tree
+    Node* insertAux(Node *&root, Node *&node);
+
+    //this function deletes a node from the tree
+    Node* deleteAux(Node *&node, int val);
+
+public:
 
     /***public member functions***/
 
-public:
-    //this function inserts a node in the tree
-    void insert(ElementType val);
+    //default constructor
+    RBT();
 
-    //this function takes a vector and fills it with the inorder traversal
-    void inorder(vector<ElementType> &v);
+    //user function to insert value
+    void insertValue(ElementType val);
+
+    //user function to delete value
+    void deleteValue(ElementType val);
+
+    //user function to get inorder
+    void inorder();
+
+    //user function to get preorder
+    void preorder();
+
+    //this function prints the tree in level order
+    void levelOrderPrint();
+
+    //this function checks if the tree is empty
+    bool empty();
 
 };
 

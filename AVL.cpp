@@ -175,7 +175,7 @@ void AVL::levelOrderPrint() {
     AVLNode *cur = root;
     q.push(root);
     while (!q.empty()) {
-        int size = q.size();
+        int size = (int)q.size();
         while (size--) {
             cur = q.front();
             q.pop();
