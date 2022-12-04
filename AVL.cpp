@@ -7,6 +7,69 @@
 
 using namespace std;
 
+AVL::AVL() : root(nullptr) {};
+
+void AVL::insert(ElementType value) {
+    if (empty())
+        root = new AVLNode(value);
+    else
+        root = insertAux(value, root); //insert node in the tree and point the root to the new return subtree
+}
+
+void AVL::remove(ElementType val) {
+    if (empty()) {
+        cerr << "Cannot delete, the tree is empty.";
+        return;
+    } else {
+        removeAux(val, root);
+    }
+}
+
+bool AVL::search(ElementType val) {
+    return searchAux(val, root);
+}
+
+bool AVL::empty() {
+    return (root == nullptr);
+}
+
+void AVL::clear() {
+    root->clear();
+    delete root;
+}
+
+void AVL::inorderTraversal(vector<ElementType> &v) {
+    inorderAux(v, root);
+}
+
+void AVL::levelOrderPrint() {
+    if (empty()) {
+        cout << "empty tree";
+        return;
+    }
+    queue<AVLNode *> q;
+    AVLNode *cur = root;
+    q.push(root);
+    while (!q.empty()) {
+        int size = (int) q.size();
+        while (size--) {
+            cur = q.front();
+            q.pop();
+            cout << cur->data << ' ';
+            if (cur->left != nullptr)
+                q.push(cur->left);
+            if (cur->right != nullptr)
+                q.push(cur->right);
+        }
+        cout << '\n';
+    }
+    cout << '\n';
+}
+
+AVL::~AVL() {
+    clear();
+}
+
 AVL::AVLNode *AVL::rotateRight(AVL::AVLNode *node) {
     assert(node != nullptr);
     assert(node->left != nullptr);
@@ -30,10 +93,6 @@ AVL::AVLNode *AVL::rotateLeft(AVL::AVLNode *node) {
     node->updateHeight();
     p->updateHeight();
     return p;
-}
-
-bool AVL::empty() {
-    return (root == nullptr);
 }
 
 AVL::AVLNode *AVL::balance(AVL::AVLNode *node) {
@@ -64,7 +123,6 @@ AVL::AVLNode *AVL::insertAux(ElementType val, AVL::AVLNode *&node) {
     node->updateHeight(); //update the height of the node after the insertion
     return balance(node); //balance the tree from bottom to up and return the balanced node
 }
-
 
 AVL::AVLNode *AVL::removeAux(ElementType val, AVL::AVLNode *&node) {
     if (node == nullptr) {
@@ -105,31 +163,11 @@ AVL::AVLNode *AVL::removeAux(ElementType val, AVL::AVLNode *&node) {
     return node;
 }
 
-void AVL::insert(ElementType value) {
-    if (empty())
-        root = new AVLNode(value);
-    else
-        root = insertAux(value, root); //insert node in the tree and point the root to the new return subtree
-}
-
-void AVL::remove(ElementType val) {
-    if (empty()) {
-        cerr << "Cannot delete, the tree is empty.";
-        return;
-    } else {
-        removeAux(val, root);
-    }
-}
-
 AVL::AVLNode *AVL::minNode(AVL::AVLNode *node) {
     AVLNode *cur = node;
     while (cur != nullptr && cur->left != nullptr)
         cur = cur->left;
     return cur;
-}
-
-void AVL::inorderTraversal(vector<ElementType> &v) {
-    inorderAux(v, root);
 }
 
 void AVL::inorderAux(vector<ElementType> &v, AVLNode *node) {
@@ -142,15 +180,6 @@ void AVL::inorderAux(vector<ElementType> &v, AVLNode *node) {
     }
 }
 
-void AVL::clear() {
-    root->clear();
-    delete root;
-}
-
-AVL::~AVL() {
-    clear();
-}
-
 bool AVL::searchAux(ElementType val, AVL::AVLNode *node) {
     if (node == nullptr)
         return false;
@@ -160,32 +189,4 @@ bool AVL::searchAux(ElementType val, AVL::AVLNode *node) {
         return searchAux(val, node->left);
     else
         return true;
-}
-
-bool AVL::search(ElementType val) {
-    return searchAux(val, root);
-}
-
-void AVL::levelOrderPrint() {
-    if (empty()) {
-        cout << "empty tree";
-        return;
-    }
-    queue<AVLNode *> q;
-    AVLNode *cur = root;
-    q.push(root);
-    while (!q.empty()) {
-        int size = (int)q.size();
-        while (size--) {
-            cur = q.front();
-            q.pop();
-            cout << cur->data << ' ';
-            if (cur->left != nullptr)
-                q.push(cur->left);
-            if (cur->right != nullptr)
-                q.push(cur->right);
-        }
-        cout << '\n';
-    }
-    cout << '\n';
 }

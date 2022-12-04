@@ -49,11 +49,8 @@ private:
     //this function fixes the tree after deletion
     void fixDelete(Node *&node);
 
-    //this function prints the inorder traversal of the tree
-    void inorderAux(Node *&node);
-
-    //this function prints the preorder traversal of the tree
-    void preorderAux(Node *&node);
+    //this is an auxiliary function that takes a vector and fills it with the inorder traversal of the tree
+    void inorderAux(Node *&node, vector<ElementType> &v);
 
     //this function gets the color of a node
     static int getColor(Node *&node);
@@ -64,11 +61,17 @@ private:
     //this function return the node with the min value in a subtree
     Node *minValueNode(Node *&node);
 
-    //this function inserts a node in the tree
-    Node* insertAux(Node *&root, Node *&node);
+    //this is an auxiliary that inserts a node in the tree
+    Node *insertAux(Node *&root, Node *&node);
 
-    //this function deletes a node from the tree
-    Node* deleteAux(Node *&node, int val);
+    //this is an auxiliary that deletes a node from the tree
+    Node *deleteAux(Node *&node, int val);
+
+    //this is an auxiliary function that clears the tree nodes
+    void clearAux(Node *node);
+
+    //this is an auxiliary function to search the tree from the perspective of the nodes
+    bool searchAux(ElementType val, Node *node);
 
 public:
 
@@ -83,18 +86,23 @@ public:
     //user function to delete value
     void deleteValue(ElementType val);
 
-    //user function to get inorder
-    void inorder();
-
-    //user function to get preorder
-    void preorder();
-
-    //this function prints the tree in level order
-    void levelOrderPrint();
+    //this function checks if the given value is in the tree
+    bool search(ElementType val);
 
     //this function checks if the tree is empty
     bool empty();
 
+    //this function clears the tree
+    void clear();
+
+    //user function to get inorder
+    void inorder(vector<ElementType> &v);
+
+    //this function prints the tree in level order
+    void levelOrderPrint();
+
+    //destructor
+    ~RBT();
 };
 
 

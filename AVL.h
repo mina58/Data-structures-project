@@ -100,10 +100,7 @@ private:
     /***public member functions***/
 public:
     //default constructor
-    AVL() : root(nullptr) {};
-
-    //destructor
-    ~AVL();
+    AVL();
 
     //this function inserts a node in the tree
     void insert(ElementType value);
@@ -125,6 +122,9 @@ public:
 
     //this function prints the tree in level order
     void levelOrderPrint();
+
+    //destructor
+    ~AVL();
 
 };
 //end of AVL header

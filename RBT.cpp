@@ -10,6 +10,63 @@ using namespace std;
 
 RBT::RBT() : root(nullptr) {}
 
+void RBT::insertValue(ElementType val) {
+    Node *node = new Node(val);
+    root = insertAux(root, node);
+    fixInsert(node);
+}
+
+void RBT::deleteValue(ElementType val) {
+    Node *node = deleteAux(root, val);
+    fixDelete(node);
+}
+
+bool RBT::search(ElementType val) {
+    return searchAux(val, root);
+}
+
+bool RBT::empty() {
+    return root == nullptr;
+}
+
+void RBT::inorder(vector<ElementType> &v) {
+    inorderAux(root, v);
+}
+
+void RBT::levelOrderPrint() {
+    if (empty()) {
+        cout << "empty tree";
+        return;
+    }
+    queue<Node *> q;
+    Node *cur = root;
+    q.push(root);
+    while (!q.empty()) {
+        int size = (int) q.size();
+        while (size--) {
+            cur = q.front();
+            q.pop();
+            cout << cur->data << ' ';
+            if (cur->left != nullptr)
+                q.push(cur->left);
+            if (cur->right != nullptr)
+                q.push(cur->right);
+        }
+        cout << '\n';
+    }
+    cout << '\n';
+}
+
+void RBT::clear() {
+    if (root == nullptr)
+        return;
+    clearAux(root);
+}
+
+RBT::~RBT() {
+    clear();
+}
+
 int RBT::getColor(RBT::Node *&node) {
     if (node == nullptr)
         return BLACK;
@@ -20,12 +77,6 @@ void RBT::setColor(RBT::Node *&node, int color) {
     if (node == nullptr)
         return;
     node->color = color;
-}
-
-void RBT::insertValue(ElementType val) {
-    Node *node = new Node(val);
-    root = insertAux(root, node);
-    fixInsert(node);
 }
 
 RBT::Node *RBT::insertAux(RBT::Node *&root, RBT::Node *&node) {
@@ -64,7 +115,7 @@ void RBT::fixInsert(RBT::Node *&node) {
             } else { //black uncle case, this means that we must make rotations
                 if (node == parent->right) { //left right case
                     rotateLeft(parent); //turn it to a left left case
-                    //fix the pointer after rotation
+                    //fix the pointers after rotation
                     node = parent;
                     parent = node->parent;
                 }
@@ -100,10 +151,6 @@ RBT::Node *RBT::minValueNode(RBT::Node *&node) {
     while (temp->left != nullptr)
         temp = temp->left;
     return temp;
-}
-
-bool RBT::empty() {
-    return root == nullptr;
 }
 
 void RBT::rotateRight(RBT::Node *&node) {
@@ -146,35 +193,6 @@ void RBT::rotateLeft(RBT::Node *&node) {
     node->parent = rightChild;
 }
 
-void RBT::levelOrderPrint() {
-    if (empty()) {
-        cout << "empty tree";
-        return;
-    }
-    queue<Node *> q;
-    Node *cur = root;
-    q.push(root);
-    while (!q.empty()) {
-        int size = (int) q.size();
-        while (size--) {
-            cur = q.front();
-            q.pop();
-            cout << cur->data << ' ';
-            if (cur->left != nullptr)
-                q.push(cur->left);
-            if (cur->right != nullptr)
-                q.push(cur->right);
-        }
-        cout << '\n';
-    }
-    cout << '\n';
-}
-
-void RBT::deleteValue(ElementType val) {
-    Node *node = deleteAux(root, val);
-    fixDelete(node);
-}
-
 RBT::Node *RBT::deleteAux(RBT::Node *&node, int val) {
     if (node == nullptr)
         return node;
@@ -205,12 +223,16 @@ void RBT::fixDelete(RBT::Node *&node) {
         else
             root = nullptr;
         delete node;
+        setColor(root, BLACK);
         return;
     }
 
     if (getColor(node) == RED || getColor(node->left) == RED || getColor(node->right) == RED) {
+        //case 1
+        //if the node was red just delete it
+        //if the node has 1 red child:
+        //replace the node with the red child and then recolor the child to black, and we are done here
         Node *child = node->left != nullptr ? node->left : node->right;
-
         if (node == node->parent->left) {
             node->parent->left = child;
             if (child != nullptr)
@@ -225,41 +247,56 @@ void RBT::fixDelete(RBT::Node *&node) {
             delete (node);
         }
     } else {
+        //complex cases
         Node *sibling = nullptr;
         Node *parent = nullptr;
         Node *ptr = node;
-        setColor(ptr, DOUBLE_BLACK);
+        setColor(ptr, DOUBLE_BLACK); //mark myself as double black
+        //iteratively fix the node from bottom to top
+        // if I was the root then this is case 2, and we do not need to do anything
         while (ptr != root && getColor(ptr) == DOUBLE_BLACK) {
             parent = ptr->parent;
             if (ptr == parent->left) {
-                sibling = parent->right;
+                sibling = parent->right; //get my sibling
+                //check the sibling
                 if (getColor(sibling) == RED) {
+                    //case 4
+                    //swap the color of my sibling and my parent and rotate my parent to my direction
                     setColor(sibling, BLACK);
                     setColor(parent, RED);
                     rotateLeft(parent);
+                    //because the double black was not removed,
+                    //we are not done here, in the next iteration we will reapply the cases
                 } else {
+                    //black sibling cases
                     if (getColor(sibling->left) == BLACK && getColor(sibling->right) == BLACK) {
+                        //case 3
                         setColor(sibling, RED);
-                        if(getColor(parent) == RED)
+                        if (getColor(parent) == RED)
                             setColor(parent, BLACK);
                         else
                             setColor(parent, DOUBLE_BLACK);
                         ptr = parent;
+                        //if the double black was passed to the parent, we will fix it in the next iteration
                     } else {
-                        if (getColor(sibling->right) == BLACK) {
+                        if (getColor(sibling->right) == BLACK) { //check my far nephew
+                            //case 5
                             setColor(sibling->left, BLACK);
                             setColor(sibling, RED);
                             rotateRight(sibling);
-                            sibling = parent->right;
+                            sibling = parent->right; //readjust the sibling pointer after the rotation
                         }
+                        //case 6
+                        //since case 5 will always transpose into case 6, no need for an if condition here
                         setColor(sibling, parent->color);
                         setColor(parent, BLACK);
                         setColor(sibling->right, BLACK);
                         rotateLeft(parent);
-                        break;
+                        break; //case 6 is a terminal case so no need to reiterate.
                     }
                 }
             } else {
+                //this is the mirror of the above block
                 sibling = parent->left;
                 if (getColor(sibling) == RED) {
                     setColor(sibling, BLACK);
@@ -289,19 +326,40 @@ void RBT::fixDelete(RBT::Node *&node) {
                 }
             }
         }
+        //now we fix the parent pointers
         if (node == node->parent->left)
             node->parent->left = nullptr;
         else
             node->parent->right = nullptr;
-        delete(node);
-        setColor(root, BLACK);
+        delete (node); //and delete the node
+        setColor(root, BLACK); //in case the root became double black
     }
 }
 
+void RBT::inorderAux(RBT::Node *&node, vector<ElementType> &v) {
+    if (node == nullptr)
+        return;
+    inorderAux(node->left, v);
+    v.push_back(node->data);
+    inorderAux(node->right, v);
+}
 
+void RBT::clearAux(RBT::Node *node) {
+    if (node->left != nullptr)
+        clearAux(node->left);
+    if (node->right != nullptr)
+        clearAux(node->right);
+    delete node;
+}
 
-
-
-
-
+bool RBT::searchAux(ElementType val, RBT::Node *node) {
+    if (node == nullptr)
+        return false;
+    if (val > node->data)
+        return searchAux(val, node->right);
+    else if (val < node->data)
+        return searchAux(val, node->left);
+    else
+        return true;
+}
 
