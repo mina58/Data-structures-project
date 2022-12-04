@@ -207,6 +207,13 @@ RBT::Node *RBT::deleteAux(RBT::Node *&node, int val) {
 }
 
 void RBT::fixDelete(RBT::Node *&node) {
+    //Deletion cases:
+    //case 1: deleting a red node
+    //case 2: double black root
+    //case 3: double black's sibling is black and both its children are black
+    //case 4: double black's sibling is red
+    //case 5: double black's sibling is black and the far nephew is black but the near nephew is red
+    //case 6: double black's sibling is black and the far nephew is red
 
     if (node == nullptr)
         return;
