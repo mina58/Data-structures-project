@@ -1,7 +1,3 @@
-//
-// Created by Mina on 01-Dec-22.
-//
-
 #include <iostream>
 #include "RBT.h"
 #include <queue>

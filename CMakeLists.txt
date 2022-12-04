@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 14
         AVL.cpp
         RBT.cpp
         RBT.h
+        BST.h
+        BST.cpp
         )
 
-add_executable(data_structures_project main.cpp AVL.cpp RBT.cpp)
+add_executable(data_structures_project main.cpp AVL.cpp RBT.cpp BST.cpp)
